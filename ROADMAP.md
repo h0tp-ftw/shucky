@@ -10,7 +10,7 @@
 
 ## Next (needs an explicit go-ahead for anything outward-facing)
 
-1. **Publish `shucky` to npm** so `npx shucky@<version> scan` works. The name `shucky` was free
+1. **Publish `shucky` to npm** so `npx @h0tp/shucky@<version> scan` works. The name `shucky` was free
    on npm as of this build — reserve/verify before publishing. Keep zero deps; add a
    `prepublishOnly` self-scan. **Do not `npm publish` without explicit approval.**
 2. **Remote scanning** in the CLI: `shucky scan owner/repo` → fetch raw `SKILL.md` + file list

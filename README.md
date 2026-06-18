@@ -27,7 +27,7 @@ node bin/shucky.js scan <path> --policy warn          # override policy
 node bin/shucky.js approve owner/repo --at 1.2.3 --reason "reviewed by me" --by me
 
 # once published (v1):
-npx shucky@<version> scan <path>                       # pin the version; never @latest
+npx @h0tp/shucky@<version> scan <path>                       # pin the version; never @latest
 ```
 
 Exit codes: `0` pass · `1` warn · `2` block · `3` error — gate CI or an installer on it.

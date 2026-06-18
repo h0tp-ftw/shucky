@@ -1,6 +1,9 @@
 {
-  "name": "shucky",
+  "name": "@h0tp/shucky",
   "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Pry open an agent skill and inspect it before you trust it — a zero-dependency safety scanner for SKILL.md packages.",
   "repository": {
     "type": "git",

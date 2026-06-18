@@ -28,4 +28,4 @@ jobs:
           done
           exit $status
         # Once shucky is published you can drop the vendored path and use:
-        #   npx shucky@<version> scan "$d"
+        #   npx @h0tp/shucky@<version> scan "$d"

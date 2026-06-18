@@ -28,7 +28,7 @@ untrusted until vetted.
 
 ```
 node bin/shucky.js scan <path> --json        # from this skill dir, no install
-npx shucky@<pinned-version> scan <path> --json   # once published (v1+)
+npx @h0tp/shucky@<pinned-version> scan <path> --json   # once published (v1+)
 ```
 
 Read its JSON evidence pack, then **always do the semantic review (step 6) on top**.
@@ -120,5 +120,5 @@ next: <override instructions if blocked>
 - **Agent-native:** the same checklist run with your own tools when no CLI is present —
   portable anywhere, but non-deterministic.
 - **Either way** the semantic review is mandatory and a human confirms before install.
-- Pin the version with `npx` (`shucky@x.y.z`, never `@latest`); shucky is zero-dependency and
+- Pin the version with `npx` (`@h0tp/shucky@x.y.z`, never `@latest`); shucky is zero-dependency and
   open-source, so it's self-scannable.

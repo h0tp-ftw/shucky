@@ -15,5 +15,5 @@ Both rely on shucky's exit codes: **`0` pass · `1` warn · `2` block · `3` err
   shows dangerous commands in code blocks), so scanning it self-flags. That's expected; see
   shucky's "Known limitations".
 - They assume shucky is vendored at `skills/shucky`. Once it's published to npm, swap
-  `node skills/shucky/bin/shucky.js scan "$d"` for `npx shucky@<version> scan "$d"`.
+  `node skills/shucky/bin/shucky.js scan "$d"` for `npx @h0tp/shucky@<version> scan "$d"`.
 - These are illustrative starting points, not hardened CI — adjust paths/policy to your repo.
