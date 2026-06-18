@@ -4,10 +4,9 @@
   "description": "Pry open an agent skill and inspect it before you trust it — a zero-dependency safety scanner for SKILL.md packages.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/h0tp-ftw/clamshell-skills.git",
-    "directory": "shucky"
+    "url": "git+https://github.com/h0tp-ftw/shucky.git"
   },
-  "homepage": "https://github.com/h0tp-ftw/clamshell-skills/tree/main/shucky#readme",
+  "homepage": "https://github.com/h0tp-ftw/shucky#readme",
   "bin": {
     "shucky": "bin/shucky.js"
   },
