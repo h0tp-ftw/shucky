@@ -1,0 +1,19 @@
+# Example — run shucky before each commit when a SKILL.md changes.
+# Add this hook to your .pre-commit-config.yaml (https://pre-commit.com). Requires Node on PATH.
+repos:
+  - repo: local
+    hooks:
+      - id: shucky
+        name: shucky — scan agent skills before commit
+        language: system
+        pass_filenames: false
+        files: 'SKILL\.md$'
+        entry: >
+          bash -c '
+          status=0;
+          for d in skills/*/; do
+            [ "$(basename "$d")" = shucky ] && continue;
+            [ -f "$d/SKILL.md" ] || continue;
+            node skills/shucky/bin/shucky.js scan "$d" || status=$?;
+          done;
+          exit $status'

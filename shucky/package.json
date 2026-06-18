@@ -1,0 +1,39 @@
+{
+  "name": "shucky",
+  "version": "0.1.0",
+  "description": "Pry open an agent skill and inspect it before you trust it — a zero-dependency safety scanner for SKILL.md packages.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/h0tp-ftw/clamshell-skills.git",
+    "directory": "shucky"
+  },
+  "homepage": "https://github.com/h0tp-ftw/clamshell-skills/tree/main/shucky#readme",
+  "bin": {
+    "shucky": "bin/shucky.js"
+  },
+  "type": "commonjs",
+  "files": [
+    "bin",
+    "lib",
+    "config.json",
+    "SKILL.md",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "test": "node test/run.js",
+    "prepublishOnly": "node test/run.js"
+  },
+  "keywords": [
+    "agent-skills",
+    "skill",
+    "security",
+    "scanner",
+    "SKILL.md",
+    "prompt-injection",
+    "supply-chain"
+  ],
+  "license": "MIT"
+}

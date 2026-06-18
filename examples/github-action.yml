@@ -1,0 +1,31 @@
+# Example — gate CI on shucky. Fails the build if any vendored skill trips the scanner.
+# Copy into .github/workflows/ of a repo that vendors agent skills.
+name: shucky
+on: [push, pull_request]
+
+jobs:
+  scan-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Scan skills with shucky
+        run: |
+          set -e
+          SKILLS_DIR="${SKILLS_DIR:-skills}"
+          status=0
+          for d in "$SKILLS_DIR"/*/; do
+            name=$(basename "$d")
+            # skip the scanner's own source — it documents attack strings, so it self-flags
+            [ "$name" = "shucky" ] && continue
+            [ -f "$d/SKILL.md" ] || continue
+            echo "::group::shucky $name"
+            node skills/shucky/bin/shucky.js scan "$d" || status=$?
+            echo "::endgroup::"
+          done
+          exit $status
+        # Once shucky is published you can drop the vendored path and use:
+        #   npx shucky@<version> scan "$d"

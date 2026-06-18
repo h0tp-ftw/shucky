@@ -1,0 +1,28 @@
+{
+  "policy": "block",
+  "failOn": ["high", "critical"],
+  "warnOn": ["medium"],
+  "rules": {
+    "secret_access": true,
+    "agent_state_access": true,
+    "browser_session": true,
+    "network_exfil": true,
+    "obfuscation": true,
+    "destructive": true,
+    "persistence": true,
+    "prompt_injection": true,
+    "supply_chain": true,
+    "undeclared_capability": true,
+    "excessive_scope": true
+  },
+  "trustedSources": [
+    "anthropics", "vercel-labs", "microsoft", "google", "stripe",
+    "cloudflare", "netlify", "huggingface", "sentry", "expo", "figma", "trailofbits"
+  ],
+  "trustedSourcePolicy": "relax",
+  "requireAgentReview": true,
+  "allowOverride": true,
+  "overrideRequiresReason": true,
+  "persistApprovals": true,
+  "approvalsFile": "approved-skills.json"
+}
