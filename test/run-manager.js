@@ -61,6 +61,27 @@ async function quietAsync(fn) {
   rmrf(t);
 })();
 
+// ---- per-command help (sync) ---------------------------------------------
+(function () {
+  const cmds = ['install', 'scan', 'find', 'list', 'remove', 'update', 'source', 'approve'];
+  let allHaveHelp = true;
+  for (const c of cmds) {
+    const h = cli.helpFor(c);
+    if (h === cli.HELP || h.indexOf('Usage:') === -1) allHaveHelp = false;
+  }
+  check('every command has its own --help (Usage + not the global blob)', allHaveHelp);
+  check('help aliases resolve (i/add, search, ls, rm, upgrade)',
+    cli.helpFor('i') === cli.helpFor('install') &&
+    cli.helpFor('add') === cli.helpFor('install') &&
+    cli.helpFor('search') === cli.helpFor('find') &&
+    cli.helpFor('ls') === cli.helpFor('list') &&
+    cli.helpFor('rm') === cli.helpFor('remove') &&
+    cli.helpFor('upgrade') === cli.helpFor('update'));
+  check('unknown/empty command → global help', cli.helpFor('bogus') === cli.HELP && cli.helpFor(undefined) === cli.HELP);
+  check('source help documents add/list/remove subcommands',
+    /\badd\b/.test(cli.helpFor('source')) && /\bremove\b/.test(cli.helpFor('source')) && /\blist\b/.test(cli.helpFor('source')));
+})();
+
 // ---- async: resolveList, find, install --list, update, source cmd --------
 async function asyncSuite() {
   // resolveList — both manifest shapes (local files)

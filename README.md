@@ -43,6 +43,8 @@ Pin the version (`@x.y.z`), never `@latest` — shucky is zero-dependency and se
 | `source add\|list\|remove <spec>` | manage the sources registry + curated lists |
 | `approve <owner/repo> --at <ver> --reason …` | log a human override of a BLOCK (pinned to a version/commit) |
 
+> Run `shucky <command> --help` for usage, arguments, and examples of any command.
+
 ### Sources — "from anywhere"
 
 `install` / `scan` accept any of:

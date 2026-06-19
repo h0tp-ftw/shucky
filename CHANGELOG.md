@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.2
+
+- **Per-command `--help`.** `shucky <command> --help` now prints detailed help for that command —
+  usage, positional arguments, every option, and examples — for `install`, `scan`, `find`, `list`,
+  `remove`, `update`, `source` (incl. its `add` / `list` / `remove` subcommands), and `approve`.
+  Aliases (`add`/`i`, `rm`, `ls`, `search`, `upgrade`, …) resolve to the right help, and the global
+  `shucky --help` points to it.
+
 ## 0.4.1
 
 - **`shucky find --github`** — also search GitHub: precise `SKILL.md` **code search** when
