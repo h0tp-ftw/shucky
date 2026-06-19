@@ -105,6 +105,7 @@ shucky install --list team # install every skill in the curated list (each one s
 - A `list` is a `.json` manifest — `["owner/repo@skill", …]` or `{ "skills": [{ "source", "skill" }] }`.
 - `find` results are install-ready; picking one runs the full scan gate — **find never installs by itself.**
 - Sources live in `~/.shucky/sources.json` (global) and `./shucky-sources.json` (project, committed).
+- `find --github` also searches GitHub — precise `SKILL.md` code search with `GITHUB_TOKEN`, else filtered repo matches.
 
 ## What the scan checks (deterministic floor)
 
@@ -171,8 +172,8 @@ Node ≥ 16. `git` on PATH for git-type sources (GitHub / GitLab / SSH). No npm 
 
 ## Status
 
-`v0.4.0` — find · scan · install (incl. `.tar.gz`/`.zip`) · manage. Remaining roadmap: more `find`
-registries (GitHub code search) and clawhub distribution.
+`v0.4.1` — find (incl. GitHub) · scan · install (incl. `.tar.gz`/`.zip`) · manage. **ClawHub-ready**
+(see `CLAWHUB.md`); publishing to npm / ClawHub is the maintainer's account-gated step.
 
 ## Credits
 

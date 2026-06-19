@@ -1,7 +1,19 @@
 ---
 name: shucky
-description: Find, vet, and INSTALL agent skills safely. Use whenever someone wants to install/add a skill, find a skill, or asks "is this skill safe?", "scan/review this skill", "check this SKILL.md". shucky fetches a skill from anywhere (github/gitlab/git/local/gist/raw URL/well-known), reads it as untrusted data (never executes it), runs deterministic red-flag checks plus a semantic review, and only installs it into the agent dirs if it passes a block/warn/pass gate (blocks on risk by default; a BLOCK can be lifted only by a logged human approval).
+description: Find, vet, and INSTALL agent skills safely. Use whenever someone wants to install/add a skill, find a skill, or asks "is this skill safe?", "scan/review this skill", "check this SKILL.md". shucky fetches a skill from anywhere (github/gitlab/git/local/gist/raw URL/well-known/.tar.gz·.zip archives), reads it as untrusted data (never executes it), runs deterministic red-flag checks plus a semantic review, and only installs it into the agent dirs if it passes a block/warn/pass gate (blocks on risk by default; a BLOCK can be lifted only by a logged human approval).
 license: MIT
+metadata:
+  openclaw:
+    emoji: "🦪"
+    user-invocable: true
+    requires:
+      anyBins: ["shucky", "npx"]
+    install:
+      - id: shucky
+        kind: node
+        package: "@h0tp/shucky"
+        bins: ["shucky"]
+        label: "Install shucky (npm)"
 ---
 
 # shucky 🦪

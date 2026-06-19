@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.1
+
+- **`shucky find --github`** — also search GitHub: precise `SKILL.md` **code search** when
+  `GITHUB_TOKEN` / `GH_TOKEN` is set, otherwise an unauthenticated **repo search** filtered to
+  skill/agent repos. Ranked + trust-annotated alongside skills.sh; opt-in (default `find` unchanged).
+- **ClawHub-ready** — `SKILL.md` gains a `metadata.openclaw` block (emoji, `user-invocable`, an npm
+  install helper for the `shucky` bin) so shucky publishes cleanly to [ClawHub](https://clawhub.ai).
+  `CLAWHUB.md` documents the (account-gated) `clawhub skill publish` flow; users then
+  `openclaw skills install shucky`.
+- `safeGet` now supports custom request headers (for the GitHub API). New flags: `--github`, `--local`.
+
 ## 0.4.0
 
 - **Archive sources** — `install`/`scan` now accept `.tar.gz` / `.tgz` / `.zip` (a remote URL,
