@@ -1,5 +1,7 @@
 # shucky 🦪
 
+[![tests](https://github.com/h0tp-ftw/shucky/actions/workflows/ci.yml/badge.svg)](https://github.com/h0tp-ftw/shucky/actions/workflows/ci.yml)
+
 > Find, vet, and install agent skills from anywhere — **shucked before they land.**
 
 A zero-dependency tool for `SKILL.md` skills. Skills run code in your environment and public

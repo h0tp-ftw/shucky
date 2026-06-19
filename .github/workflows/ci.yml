@@ -1,0 +1,40 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20', '22']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # shucky has zero npm dependencies, so there is nothing to install.
+      - name: Versions
+        run: node --version && git --version
+
+      - name: Tests (zero-dependency, 183 checks)
+        run: npm test
+
+      - name: CLI smoke — the real bin runs the gate
+        run: |
+          node bin/shucky.js --version
+          node bin/shucky.js scan ./fixtures/benign-example -q
+          code=0
+          node bin/shucky.js scan ./fixtures/malicious-example -q || code=$?
+          test "$code" -eq 2 && echo "malicious fixture correctly BLOCKED (exit $code)"
