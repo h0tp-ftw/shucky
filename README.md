@@ -163,7 +163,7 @@ only), so a doc that merely *mentions* `curl … | sh` isn't flagged.
 ## Develop / test
 
 ```bash
-npm test          # node test/run.js && node test/run-install.js   (82 checks, zero deps)
+npm test          # → test/run-all.js   (183 zero-dep checks across 6 suites, one aggregated summary)
 ```
 
 Fixtures in `fixtures/` carry inert payloads and are **never executed**.

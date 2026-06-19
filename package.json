@@ -1,6 +1,6 @@
 {
   "name": "@h0tp/shucky",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "publishConfig": {
     "access": "public"
   },
@@ -26,8 +26,8 @@
     "node": ">=16"
   },
   "scripts": {
-    "test": "node test/run.js && node test/run-install.js && node test/run-manager.js && node test/run-archive.js",
-    "prepublishOnly": "node test/run.js && node test/run-install.js && node test/run-manager.js && node test/run-archive.js"
+    "test": "node test/run-all.js",
+    "prepublishOnly": "node test/run-all.js"
   },
   "keywords": [
     "agent-skills",

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.3
+
+- **Comprehensive test suite + unified runner.** `npm test` now runs `test/run-all.js`, which runs
+  every suite in its own process and prints one aggregated summary (per-suite ✓/✗ + grand total),
+  showing full output only for a suite that fails. **183 zero-dep checks across 6 suites:**
+  - `run-rules.js` — every deterministic scan rule fired in isolation, a meta-check that *all* rules
+    are covered, and the prose-vs-fence Markdown logic.
+  - `run-coverage.js` — edge cases across every module (sources/safeurl/discover/place/lock/registry/
+    archive) plus full CLI integration: the install → list → update → remove lifecycle, multi-skill
+    gating (worst-exit-wins), `--skill`, `--policy report`, and `--json` output shapes.
+  - plus `run.js`, `run-install.js`, `run-manager.js`, `run-archive.js`.
+  - Shared zero-dep harness `test/_util.js` (check / eq / throws / tmp / quiet / capture + tar/zip
+    builders).
+
 ## 0.4.2
 
 - **Per-command `--help`.** `shucky <command> --help` now prints detailed help for that command —
