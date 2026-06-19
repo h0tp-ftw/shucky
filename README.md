@@ -11,26 +11,46 @@ data, and only installs it if it passes** — block-on-risk by default. The safe
 
 No runtime dependency on any other tool. (Uses your system `git` for git sources.)
 
+## Install
+
+shucky is a single zero-dependency Node CLI — **Node ≥ 16** (plus your system `git` for git sources).
+
+**From source — the current full version** (recommended today; see the note below):
+
+```bash
+git clone https://github.com/h0tp-ftw/shucky && cd shucky
+npm link                 # adds a `shucky` command to your PATH (points at this checkout)
+shucky --version         # 0.4.3
+# …or run it directly, no link:
+node bin/shucky.js --help
+```
+
+**Via npm / npx** (once v0.4.x is published — pin the version, never `@latest`, for a security tool):
+
+```bash
+npm i -g @h0tp/shucky           # global `shucky` command
+npx @h0tp/shucky@0.4.3 --help   # run without installing (pinned)
+```
+
+> ⚠️ The npm registry currently has **`@h0tp/shucky@0.1.0` (scanner only)**. The full
+> find · scan · install · manage CLI (**v0.4.3**) lives on GitHub `main` until it's published — so
+> for now install **from source** above, or run `node bin/shucky.js`.
+
 ## Quick start
 
 ```bash
-# install from anywhere — fetched, scanned, THEN placed into your agents:
-npx @h0tp/shucky@<version> install anthropics/skills
-npx @h0tp/shucky@<version> install owner/repo --global --agent claude-code
-npx @h0tp/shucky@<version> install ./my-local-skill
-
-# vet without installing (local path OR remote source):
-npx @h0tp/shucky@<version> scan owner/repo
-npx @h0tp/shucky@<version> scan ./path --json
-
-# what shucky installed:
-npx @h0tp/shucky@<version> list
-
-# from a clone, no npm install:
-node bin/shucky.js install owner/repo
+shucky find pdf                            # discover skills (skills.sh + your sources)
+shucky install anthropics/skills@pdf       # fetch → scan → install (into your detected agents)
+shucky install owner/repo --global --agent claude-code
+shucky install ./my-local-skill            # a local folder
+shucky scan owner/repo                      # vet without installing (local OR remote)
+shucky list                                 # what shucky installed
+shucky remove pdf
 ```
 
-Pin the version (`@x.y.z`), never `@latest` — shucky is zero-dependency and self-scannable.
+Every command has detailed help — `shucky <command> --help`. shucky never runs a skill; it reads
+files as text and installs only what passes the scan. (No `shucky` command yet? Use
+`node bin/shucky.js <command>` from a clone — see **Install** above.)
 
 ## Commands
 
