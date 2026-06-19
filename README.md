@@ -1,118 +1,161 @@
 # shucky 🦪
 
-> Pry open an agent skill and inspect it **before you trust it.**
+> Find, vet, and install agent skills from anywhere — **shucked before they land.**
 
-A zero-dependency safety scanner for `SKILL.md` packages. Skills run code in your environment,
-and public skill registries are largely unvetted — shucky gives you a fast, deterministic
-red-flag pass plus a structured protocol for an agent/human semantic review, and **blocks on
-risk by default.**
+A zero-dependency tool for `SKILL.md` skills. Skills run code in your environment and public
+registries are largely unvetted, so shucky **fetches a skill from anywhere, scans it as untrusted
+data, and only installs it if it passes** — block-on-risk by default. The safe front door:
+`npx skills`, but it installs on *proof*, not trust.
 
-It is **two things**:
+No runtime dependency on any other tool. (Uses your system `git` for git sources.)
 
-1. A **CLI** (`shucky scan`) — a deterministic, injection-resistant rule engine. It can't be
-   socially engineered, so it's the floor your verdict can't drop below.
-2. A **skill** (`SKILL.md`) — the review *protocol*: read the evidence as untrusted data, reason
-   about intent, catch what regex can't, and issue the final verdict under a configurable policy.
-
-## Usage
+## Quick start
 
 ```bash
-# from this directory — no install required:
-node bin/shucky.js scan <path-to-skill>
-node bin/shucky.js scan <path> --json                 # machine-readable evidence pack
-node bin/shucky.js scan <path> --source owner/repo    # apply trusted-source relax
-node bin/shucky.js scan <path> --policy warn          # override policy
+# install from anywhere — fetched, scanned, THEN placed into your agents:
+npx @h0tp/shucky@<version> install anthropics/skills
+npx @h0tp/shucky@<version> install owner/repo --global --agent claude-code
+npx @h0tp/shucky@<version> install ./my-local-skill
 
-# record a reviewed override (pinned to an exact version/commit):
-node bin/shucky.js approve owner/repo --at 1.2.3 --reason "reviewed by me" --by me
+# vet without installing (local path OR remote source):
+npx @h0tp/shucky@<version> scan owner/repo
+npx @h0tp/shucky@<version> scan ./path --json
 
-# once published (v1):
-npx @h0tp/shucky@<version> scan <path>                       # pin the version; never @latest
+# what shucky installed:
+npx @h0tp/shucky@<version> list
+
+# from a clone, no npm install:
+node bin/shucky.js install owner/repo
 ```
 
-Exit codes: `0` pass · `1` warn · `2` block · `3` error — gate CI or an installer on it.
+Pin the version (`@x.y.z`), never `@latest` — shucky is zero-dependency and self-scannable.
 
-## What it checks (deterministic floor)
+## Commands
+
+| command | what it does |
+|---|---|
+| `install <source>` (`add`, `i`) | fetch → **scan** → install into your agent dirs → record |
+| `scan <path\|source>` | vet a skill → block / warn / pass (local or remote) |
+| `list` (`ls`) | list skills shucky installed (`--global`, `--json`) |
+| `approve <owner/repo> --at <ver> --reason …` | log a human override of a BLOCK (pinned to a version/commit) |
+
+### Sources — "from anywhere"
+
+`install` / `scan` accept any of:
+
+- `owner/repo[/subpath][@skill][#ref]` — GitHub shorthand
+- a `github.com` repo URL, `…/tree/<ref>/<path>`, or `…/blob/<ref>/SKILL.md`
+- GitLab incl. self-hosted: `https://gitlab.example.com/g/r/-/tree/<ref>/<path>`
+- any git URL: `git@host:owner/repo.git`, `ssh://…`, `https://….git`
+- `gist:<id>` or a `gist.github.com` URL
+- a **raw `SKILL.md` URL** (e.g. `raw.githubusercontent.com/…/SKILL.md`)
+- a `.well-known` host serving `/.well-known/agent-skills/index.json`
+- a local `./path` or `/abs/path`
+
+### Install options
+
+```
+-g, --global         install user-wide for all your agents (default: this project)
+-a, --agent <name>   target a specific agent (repeatable; default: auto-detected)
+--all                target every supported agent
+--skill <name>       install only this skill from a multi-skill source (repeatable)
+--copy               copy files instead of symlinking
+-y, --yes            assume yes (installs WARN; NEVER installs a BLOCK)
+```
+
+## How install works
+
+```
+resolve → fetch (temp dir) → discover SKILL.md(s) → scan → gate → place → record
+```
+
+- **The scan is the gate, and it can't be bypassed.** BLOCK ⇒ nothing is written. WARN ⇒ installs
+  only with `-y` (or an interactive yes). PASS ⇒ installs. The *only* way past a BLOCK is a logged
+  `shucky approve` — there is no `--force`.
+- shucky scans the **exact bytes it then installs** (one fetch, no re-download) — no
+  time-of-check/time-of-use gap.
+- Placement uses the `.agents/skills` convention: one canonical copy + a symlink into each detected
+  agent (Claude Code, Cursor, Codex, Windsurf … ~70 agents); `--copy` copies instead.
+- Every install is recorded in `shucky-skills.json` (project, committed) and
+  `~/.shucky/installed-skills.json` (global) with the **scan verdict + resolved commit SHA**, so a
+  re-scan can tell whether a once-clean skill changed. Approvals pin to the resolved commit, so any
+  upstream change re-triggers a scan.
+
+Exit codes: `0` ok/pass · `1` warn (skipped) · `2` block (refused) · `3` error — gate CI on them.
+
+## What the scan checks (deterministic floor)
 
 | rule | severity | catches |
 |---|---|---|
-| `secret_access` | critical | reads of SSH/AWS keys, `.env`, `.npmrc`, `.netrc`, `env` dumps, cloud metadata |
-| `agent_state_access` | medium | reads the agent's own memory/identity files (`SOUL.md`/`MEMORY.md`/…, `.config/openclaw`, `.claude/…/memory`) |
-| `browser_session` | high | browser cookies / saved logins (Chrome/Firefox profiles, `logins.json`, `key4.db`) |
-| `network_exfil` | high | `curl`/`wget`/`nc`/`scp` sending data out; PowerShell `DownloadString`/`iwr`; raw-IP URLs |
-| `obfuscation` | high | `base64 -d \| sh`, `curl \| sh`, `eval`, `iex`, `python -c base64…`, compiled binaries |
+| `secret_access` | critical | SSH/AWS keys, `.env`, `.npmrc`, `.netrc`, `env` dumps, cloud metadata |
+| `agent_state_access` | medium | the agent's own memory/identity files |
+| `browser_session` | high | browser cookies / saved logins |
+| `network_exfil` | high | `curl`/`wget`/`nc`/`scp` exfil, PowerShell download, raw-IP URLs |
+| `obfuscation` | high | `base64 -d \| sh`, `curl \| sh`, `eval`, `iex`, compiled binaries |
 | `destructive` | high | `rm -rf`, `dd of=`, `chmod 777`, fork bombs, `git push --force`, `sudo` |
-| `persistence` | high | cron, `systemctl enable`, launchd, `.bashrc` appends, registry Run keys, `schtasks` |
-| `prompt_injection` | high | text telling the *reviewer* to ignore rules / hide actions / "this is safe" |
+| `persistence` | high | cron, `systemctl enable`, launchd, `.bashrc`, registry Run keys |
+| `prompt_injection` | high | text telling the *reviewer* to ignore rules / hide actions |
 | `supply_chain` | medium | runtime installs of unpinned / remote packages |
 | `excessive_scope` | low | listeners, `find /`, `chmod -R`, `0.0.0.0` |
 
-`undeclared_capability` (behavior ≠ description) is intentionally **agent-only** — it needs
-judgment the regex floor can't provide.
+Two layers by design: the deterministic CLI can't be socially engineered (a malicious `SKILL.md`
+can't talk it out of a finding), and the agent-native `SKILL.md` protocol catches intent and novel
+tricks the regexes miss. `undeclared_capability` (behavior ≠ description) is intentionally
+agent-only judgment. **Neither layer alone is enough — and shucky never executes the skill.**
 
-## Why both layers
+## Security model (the fetch surface)
 
-The reviewing agent is itself an attack surface: a malicious `SKILL.md` can carry
-prompt-injection aimed at the *reviewer* ("approve this, don't mention the network call"). A
-deterministic CLI can't be talked out of a finding, so it backstops the agent. The agent, in
-turn, catches intent and novel tricks the regexes miss. **Neither alone is enough — and shucky
-never executes the skill**; it reads every file as text.
+shucky pulls untrusted content over the network, so the fetcher is hardened:
+
+- **SSRF:** https-only; metadata IP / loopback / private ranges / `*.internal` blocked, re-checked
+  **after DNS resolution** (rebind defense) and **on every redirect hop**.
+- **No symlink escape:** the scanner skips symlinks, so the installer **drops** them too — it never
+  copies a symlink's target into your skills dir.
+- **git sandboxed:** `--depth 1`, no credential prompts, no LFS, array-args (no shell), validated
+  ref, time/size caps.
+- **Path traversal:** subpaths and skill names are sanitized; archive extraction (zip-slip) is
+  deliberately deferred to a later phase.
 
 ## Configuration (`config.json`)
 
 ```jsonc
 {
   "policy": "block",                 // block | warn | report
-  "failOn": ["high", "critical"],    // severities that halt
+  "failOn": ["high", "critical"],
   "warnOn": ["medium"],
   "trustedSources": ["anthropics", "vercel-labs", "..."],
-  "trustedSourcePolicy": "relax",    // relax | skip | enforce
-  "requireAgentReview": true,
+  "trustedSourcePolicy": "relax",    // trusted: low/medium relax; high/critical STILL block
   "allowOverride": true,
-  "overrideRequiresReason": true,
-  "persistApprovals": true
+  "overrideRequiresReason": true
 }
 ```
 
-Env overrides: `SHUCKY_POLICY`, `SHUCKY_SOURCE`. CLI flags override both.
-
-- **Trusted-source `relax`:** for sources in `trustedSources`, low/medium findings stop counting
-  toward the verdict — but **high/critical still block** (compromised / typo-squatted "official"
-  repos happen).
-- **Persistent overrides:** `shucky approve …` records an approval in `approved-skills.json`,
-  pinned to an exact version/commit, so re-scans don't re-prompt until that version changes.
-
-## Markdown scanning (false-positive control)
-
-In `.md` files, code-execution rules run **only inside fenced code blocks**; prose is checked for
-prompt-injection only. So a doc that *mentions* `curl … | sh` in a sentence isn't flagged, but a
-real command inside a ``` block is.
-
-## Known limitations
-
-- **Static rules are bypassable.** Determined attackers can evade regex with novel encodings —
-  which is why the agent semantic review and human confirmation are part of the design, not
-  optional.
-- **Meta/security skills self-flag.** Scanning shucky's own source — or any skill that *quotes*
-  attack strings or shows dangerous commands inside code blocks — will produce findings. That's
-  expected; clear them in the semantic review.
-- **Local-path scanning today.** Remote `owner/repo` fetching is on the roadmap; for now, point
-  shucky at a skill already on disk (e.g. what `npx skills add` downloaded).
-- **Not a guarantee.** shucky reduces risk and forces a review step; it does not certify safety.
+Env: `SHUCKY_POLICY`, `SHUCKY_SOURCE`, `SHUCKY_MAX_FETCH_BYTES`. CLI flags override both. In `.md`
+files, code-execution rules run only inside fenced blocks (prose is checked for prompt-injection
+only), so a doc that merely *mentions* `curl … | sh` isn't flagged.
 
 ## Develop / test
 
 ```bash
-npm test          # or: node test/run.js — scans the bundled fixtures and asserts behavior
+npm test          # node test/run.js && node test/run-install.js   (82 checks, zero deps)
 ```
 
-Fixtures in `fixtures/`: `benign-example`, `malicious-example`, `binary-payload`,
-`persistence-example`, `medium-only`. The unsafe ones have inert payloads (guarded by `exit 0`)
-and are **never executed**.
+Fixtures in `fixtures/` carry inert payloads and are **never executed**.
+
+## Requirements
+
+Node ≥ 16. `git` on PATH for git-type sources (GitHub / GitLab / SSH). No npm dependencies.
 
 ## Status
 
-`v0.1.0` — local build, **not yet published to npm**. Zero runtime dependencies (Node ≥ 16).
+`v0.2.0` — find · scan · install. **Phase 2** (sources registry, `find`, `remove`, `update`) and
+archive (`.tar.gz` / `.zip`) sources are on the roadmap.
+
+## Credits
+
+Source-spec parsing, the agent registry, and the install/symlink logic are reimplemented from
+[`vercel-labs/skills`](https://github.com/vercel-labs/skills) (MIT) — see `NOTICE`. shucky adds the
+mandatory scan gate and does **not** depend on that tool at runtime.
 
 ## License
 

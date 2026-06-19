@@ -1,10 +1,10 @@
 {
   "name": "@h0tp/shucky",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Pry open an agent skill and inspect it before you trust it — a zero-dependency safety scanner for SKILL.md packages.",
+  "description": "Find, vet, and install agent skills from anywhere — a zero-dependency safety scanner + installer for SKILL.md packages. It shucks every skill before it lands.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/h0tp-ftw/shucky.git"
@@ -19,20 +19,22 @@
     "lib",
     "config.json",
     "SKILL.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "NOTICE"
   ],
   "engines": {
     "node": ">=16"
   },
   "scripts": {
-    "test": "node test/run.js",
-    "prepublishOnly": "node test/run.js"
+    "test": "node test/run.js && node test/run-install.js",
+    "prepublishOnly": "node test/run.js && node test/run-install.js"
   },
   "keywords": [
     "agent-skills",
     "skill",
     "security",
     "scanner",
+    "installer",
     "SKILL.md",
     "prompt-injection",
     "supply-chain"

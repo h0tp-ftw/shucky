@@ -1,0 +1,24 @@
+shucky
+Copyright (c) 2026 h0tp-ftw
+Licensed under the MIT License (see LICENSE).
+
+------------------------------------------------------------------------
+This product reimplements logic derived from:
+
+  vercel-labs/skills   —   https://github.com/vercel-labs/skills
+  Licensed under the MIT License. Copyright (c) Vercel, Inc. and contributors.
+
+The following shucky modules adapt logic from that project:
+
+  lib/sources.js    <-  src/source-parser.ts     (source-spec grammar)
+  lib/agents.js     <-  src/agents.ts            (agent -> skills-dir registry)
+  lib/place.js      <-  src/installer.ts         (canonical-dir + symlink/copy install)
+  lib/discover.js   <-  src/plugin-manifest.ts   (Claude-Code plugin manifest discovery)
+
+shucky reimplements this logic from scratch as zero-dependency CommonJS, adds a mandatory
+safety-scan gate (and, for security, DROPS symlinks on copy rather than dereferencing them),
+and does NOT depend on the `skills` package at runtime.
+
+------------------------------------------------------------------------
+Earlier scan heuristics (browser_session, agent_state_access, raw-IP exfil) are adapted from
+the community "skill-vetter" skill (spclaudehome), MIT-0.

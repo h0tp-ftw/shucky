@@ -1,31 +1,45 @@
 # Roadmap
 
-## Done — v0.1.0 (local, unpublished)
+## Done
 
-- **skill-finder** + **shucky** skills (agent-native, script-free SKILL.md).
-- **shucky CLI** (zero deps): rule engine, verdict model (block-on-risk), trusted-source
-  `relax`, persistent approval overrides, human + JSON output, exit codes.
-- Prose/fence-aware scanning to cut false positives (docs that *mention* commands aren't flagged).
-- Fixtures (benign / malicious / binary / medium-only) + zero-dep test suite — all green.
+### v0.1.0 — the scanner
+- `shucky scan` deterministic rule engine + verdict model (block-on-risk, trusted-source relax,
+  approval overrides), prose/fence-aware Markdown scanning, agent-native `SKILL.md` protocol.
 
-## Next (needs an explicit go-ahead for anything outward-facing)
+### v0.2.0 — the installer (find · scan · install, self-contained)
+- **`shucky install <source>`** — resolve → fetch → scan → gate → place → record. The scan is
+  un-bypassable: only `shucky approve` lifts a BLOCK (no `--force`; `-y` never installs one). It
+  scans the **exact bytes it installs** — single fetch, no TOCTOU gap.
+- **From anywhere:** github / gitlab (incl. self-hosted) / any git / local / `gist:` / raw
+  `SKILL.md` URL / `.well-known`. Broader than `npx skills`, which rejects bare file URLs.
+- **Comprehensive multi-environment install** ported from `vercel-labs/skills` (MIT, see NOTICE):
+  ~70-agent registry, canonical `.agents/skills` + per-agent symlinks, copy/junction fallback,
+  agent detection, idempotency, plugin-manifests.
+- **`shucky scan`** now also accepts remote sources; **`shucky list`** reads the install lock.
+- Hardened fetcher: SSRF + DNS-rebind + redirect re-guard, symlink-drop on copy, git sandboxing.
+- Two lockfiles (project committed + global) recording verdict + commit. 82 zero-dep tests.
+- **No runtime dependency on `npx skills`;** `git` is the only external binary.
+- Published `@h0tp/shucky@0.1.0` already live on npm (scanner only).
 
-1. **Publish `shucky` to npm** so `npx @h0tp/shucky@<version> scan` works. The name `shucky` was free
-   on npm as of this build — reserve/verify before publishing. Keep zero deps; add a
-   `prepublishOnly` self-scan. **Do not `npm publish` without explicit approval.**
-2. **Remote scanning** in the CLI: `shucky scan owner/repo` → fetch raw `SKILL.md` + file list
-   via the GitHub API (Node `https`, no deps) into a temp dir, read-only. (Local-path scanning
-   is the current, common case.)
-3. **Wire approvals into the agent flow:** finder/shucky `SKILL.md` instruct recording overrides
-   via `shucky approve <owner/repo> --at <ver> --reason ...`.
-4. **CI usage:** an example GitHub Action / pre-commit that runs `shucky scan` on a skills dir
-   and fails on block. (openclaw already uses pre-commit + Actions — could integrate later.)
-5. **More rules:** PowerShell/`IEX`, cron/scheduled tasks, env-var beaconing, base85/hex
-   variants, zip-slip; plus an opt-in `.shuckyignore` and inline allow-comments for FP control.
-6. **Optional:** per-rule severity overrides in config, HTML report output.
+## Next — Phase 2 (the manager + discovery)
+1. **Sources registry + curated lists** (`lib/registry.js`): `shucky source add|list|remove`;
+   entry `type: repo | registry | list`; a `list` is an installable curated bundle
+   (`shucky install --list <name>`); trusted sources feed the relax policy.
+2. **`shucky find <query>`** (`lib/find.js`) — search across the user's registered sources + public
+   registries (skills.sh / GitHub / well-known), every hit routed through the scan gate. Folds in
+   the `skill-finder` companion skill.
+3. **`shucky remove <name>`** — uninstall across agent dirs + lock.
+4. **`shucky update [name]`** — re-fetch → **re-scan** → re-place; warn if a once-clean skill now
+   blocks (the lock already stores the verdict + commit for this).
+5. Wire approvals into the agent-native flow; an example CI action that fails on BLOCK.
+
+## Phase 3 (tail)
+- **Archive sources** (`.tar.gz` / `.zip`) with full zip-slip / zip-bomb / symlink-entry guards.
+- More rules (PowerShell `IEX`, env-var beaconing, base85/hex); `.shuckyignore`; per-rule severity
+  overrides; HTML report.
+- Ship to **clawhub** (openclaw's registry), alongside `skill-vetter`.
 
 ## Won't do (by design)
-
-- Claim to *prove* a skill safe. shucky reduces risk and forces a review step; static detectors
-  are bypassable (Trail of Bits bypassed the major vendors' scanners). This is defense-in-depth,
-  not a guarantee — the agent semantic review and human confirmation are part of the design.
+- Claim to *prove* a skill safe. shucky reduces risk and forces a review step; static detectors are
+  bypassable (Trail of Bits bypassed the major vendors' scanners). Defense-in-depth, not a
+  guarantee — the agent semantic review and human confirmation are part of the design.
