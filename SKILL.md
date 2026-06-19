@@ -78,8 +78,11 @@ Flow: **resolve → fetch (temp dir) → scan (`scanTarget`) → gate → place 
 - Recorded in `shucky-skills.json` (project) / `~/.shucky/installed-skills.json` (global) with the
   scan verdict + resolved commit, so a re-scan can detect drift. Approvals pin to that commit.
 
-Companion commands: `shucky list` (what's installed), `shucky scan <source>` (vet without
-installing — now also accepts remote sources).
+Companion commands: `shucky find <query>` (search skills.sh + your registered sources — every hit
+routes through the scan gate), `shucky source add|list|remove` (register repos / registries /
+curated lists; `--trust trusted` relaxes low/medium), `shucky install --list <name>` (install a
+curated bundle), `shucky list` (what's installed), `shucky remove <name>`, `shucky update [name]`
+(re-fetch → RE-SCAN → re-place), `shucky scan <source>` (vet without installing).
 
 **Agent-native fallback (no CLI):** fetch the skill read-only, run the rule checklist + semantic
 review yourself, and only copy it into the user's skills dir if it passes — never install something

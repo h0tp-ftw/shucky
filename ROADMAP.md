@@ -7,36 +7,29 @@
   approval overrides), prose/fence-aware Markdown scanning, agent-native `SKILL.md` protocol.
 
 ### v0.2.0 — the installer (find · scan · install, self-contained)
-- **`shucky install <source>`** — resolve → fetch → scan → gate → place → record. The scan is
-  un-bypassable: only `shucky approve` lifts a BLOCK (no `--force`; `-y` never installs one). It
-  scans the **exact bytes it installs** — single fetch, no TOCTOU gap.
-- **From anywhere:** github / gitlab (incl. self-hosted) / any git / local / `gist:` / raw
-  `SKILL.md` URL / `.well-known`. Broader than `npx skills`, which rejects bare file URLs.
-- **Comprehensive multi-environment install** ported from `vercel-labs/skills` (MIT, see NOTICE):
-  ~70-agent registry, canonical `.agents/skills` + per-agent symlinks, copy/junction fallback,
-  agent detection, idempotency, plugin-manifests.
-- **`shucky scan`** now also accepts remote sources; **`shucky list`** reads the install lock.
-- Hardened fetcher: SSRF + DNS-rebind + redirect re-guard, symlink-drop on copy, git sandboxing.
-- Two lockfiles (project committed + global) recording verdict + commit. 82 zero-dep tests.
-- **No runtime dependency on `npx skills`;** `git` is the only external binary.
-- Published `@h0tp/shucky@0.1.0` already live on npm (scanner only).
+- **`shucky install <source>`** — resolve → fetch → scan → gate → place → record. Un-bypassable
+  gate (only `shucky approve` lifts a BLOCK; `-y` never installs one); scans the exact bytes it
+  installs (no TOCTOU). From anywhere: github / gitlab (self-hosted) / git / local / `gist:` / raw
+  `SKILL.md` URL / `.well-known`. Comprehensive ~70-agent install matrix ported from
+  `vercel-labs/skills` (MIT). `scan` accepts remote sources; `list` reads the lock. Hardened
+  fetcher (SSRF + DNS-rebind + redirect re-guard, symlink-drop, git sandboxing). Two lockfiles.
 
-## Next — Phase 2 (the manager + discovery)
-1. **Sources registry + curated lists** (`lib/registry.js`): `shucky source add|list|remove`;
-   entry `type: repo | registry | list`; a `list` is an installable curated bundle
-   (`shucky install --list <name>`); trusted sources feed the relax policy.
-2. **`shucky find <query>`** (`lib/find.js`) — search across the user's registered sources + public
-   registries (skills.sh / GitHub / well-known), every hit routed through the scan gate. Folds in
-   the `skill-finder` companion skill.
-3. **`shucky remove <name>`** — uninstall across agent dirs + lock.
-4. **`shucky update [name]`** — re-fetch → **re-scan** → re-place; warn if a once-clean skill now
-   blocks (the lock already stores the verdict + commit for this).
-5. Wire approvals into the agent-native flow; an example CI action that fails on BLOCK.
+### v0.3.0 — the manager + discovery
+- **`shucky find [query]`** — search skills.sh + the user's registered sources/lists, ranked +
+  trust-annotated; every hit routes through the scan gate (find never installs directly).
+- **`shucky source add|list|remove`** — sources registry (repos / registries / curated lists);
+  `--trust trusted` feeds the relax policy. **Curated lists**: `shucky install --list <name>`
+  installs a bundle, each member scanned. Global `~/.shucky/sources.json` + project `./shucky-sources.json`.
+- **`shucky remove <name>`** — uninstall across agent dirs + prune lock (path-guarded).
+- **`shucky update [name]`** — re-fetch → re-scan → re-place; a now-blocking skill is left as-is +
+  flagged, never silently reinstalled.
+- 102 zero-dep tests across `test/run.js` + `test/run-install.js` + `test/run-manager.js`.
 
-## Phase 3 (tail)
+## Next — Phase 3 (tail)
 - **Archive sources** (`.tar.gz` / `.zip`) with full zip-slip / zip-bomb / symlink-entry guards.
+- Search more public registries in `find` (GitHub code search, more well-known hosts); cache results.
 - More rules (PowerShell `IEX`, env-var beaconing, base85/hex); `.shuckyignore`; per-rule severity
-  overrides; HTML report.
+  overrides; HTML report; an example CI action that fails on BLOCK.
 - Ship to **clawhub** (openclaw's registry), alongside `skill-vetter`.
 
 ## Won't do (by design)

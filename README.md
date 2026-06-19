@@ -36,7 +36,11 @@ Pin the version (`@x.y.z`), never `@latest` — shucky is zero-dependency and se
 |---|---|
 | `install <source>` (`add`, `i`) | fetch → **scan** → install into your agent dirs → record |
 | `scan <path\|source>` | vet a skill → block / warn / pass (local or remote) |
+| `find [query]` (`search`) | search skills.sh + your registered sources, ranked + trust-annotated |
 | `list` (`ls`) | list skills shucky installed (`--global`, `--json`) |
+| `remove <name>` (`rm`) | uninstall across agent dirs + prune the lock |
+| `update [name]` | re-fetch → **re-scan** → re-place installed skills |
+| `source add\|list\|remove <spec>` | manage the sources registry + curated lists |
 | `approve <owner/repo> --at <ver> --reason …` | log a human override of a BLOCK (pinned to a version/commit) |
 
 ### Sources — "from anywhere"
@@ -82,6 +86,24 @@ resolve → fetch (temp dir) → discover SKILL.md(s) → scan → gate → plac
   upstream change re-triggers a scan.
 
 Exit codes: `0` ok/pass · `1` warn (skipped) · `2` block (refused) · `3` error — gate CI on them.
+
+## Sources registry, curated lists & find
+
+Register the repos / registries / lists you trust, then search and bulk-install across them:
+
+```bash
+shucky source add anthropics/skills --trust trusted        # a repo you trust (relaxes low/medium)
+shucky source add https://example.com/team.json --name team  # a curated bundle (a .json list)
+shucky source list
+
+shucky find pdf            # search skills.sh + your sources, ranked by installs, trust-annotated
+shucky install --list team # install every skill in the curated list (each one scanned)
+```
+
+- A `trusted` source feeds the scanner's relax policy (low/medium relax; **high/critical still block**).
+- A `list` is a `.json` manifest — `["owner/repo@skill", …]` or `{ "skills": [{ "source", "skill" }] }`.
+- `find` results are install-ready; picking one runs the full scan gate — **find never installs by itself.**
+- Sources live in `~/.shucky/sources.json` (global) and `./shucky-sources.json` (project, committed).
 
 ## What the scan checks (deterministic floor)
 
@@ -148,8 +170,8 @@ Node ≥ 16. `git` on PATH for git-type sources (GitHub / GitLab / SSH). No npm 
 
 ## Status
 
-`v0.2.0` — find · scan · install. **Phase 2** (sources registry, `find`, `remove`, `update`) and
-archive (`.tar.gz` / `.zip`) sources are on the roadmap.
+`v0.3.0` — find · scan · install · manage (sources, lists, remove, update). Archive (`.tar.gz` /
+`.zip`) sources and clawhub distribution are the remaining roadmap items.
 
 ## Credits
 

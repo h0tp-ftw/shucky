@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0
+
+Phase 2 — shucky becomes a full manager: it now manages many skill sources and discovers across them.
+
+- **`shucky find [query]`** (`search`, `f`, `s`) — search the public registry (skills.sh) + your
+  registered sources/lists; results ranked by installs and annotated with source-trust. Selecting
+  one hands off to `install`, so every result is scanned before it lands. `--json`, `--limit`.
+- **`shucky source add|list|remove <spec>`** — a registry of the repos / registries / curated lists
+  you trust. `--trust trusted` feeds the scanner's relax policy (low/medium relax; high/critical
+  still block). Two files: `~/.shucky/sources.json` (global) + `./shucky-sources.json` (project).
+- **Curated lists:** register a `.json` manifest as a `list` source and install the whole bundle
+  with `shucky install --list <name>` (each member independently scanned).
+- **`shucky remove <name>`** (`rm`) — uninstall across agent dirs + prune the lockfile (path-guarded
+  to the skill's own directory).
+- **`shucky update [name]`** — re-fetch → **re-scan** → re-place installed skills; if a once-clean
+  skill now BLOCKS it is left as-is and flagged, not silently reinstalled. Skips local/raw sources.
+- New modules `lib/registry.js`, `lib/find.js`; `lib/place.js` gains `unplaceSkill`. New flags:
+  `--name`, `--trust`, `--type`, `--limit`, `--list`.
+- Tests: `test/run-manager.js` (20 checks) — 102 zero-dep checks total.
+
 ## 0.2.0
 
 shucky becomes find · scan · **install** — the safe front door for adding skills. Self-contained;
