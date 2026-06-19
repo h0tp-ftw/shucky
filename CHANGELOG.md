@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0
+
+- **Archive sources** — `install`/`scan` now accept `.tar.gz` / `.tgz` / `.zip` (a remote URL,
+  incl. GitHub `…/archive/….tar.gz`, or a local file). New `lib/archive.js` extracts with pure Node
+  (zlib), hardened against the classic archive attacks: **zip-slip** (every entry path is resolved
+  and must stay inside the destination), **symlink / hardlink / device entries are dropped** (never
+  written — same reason placement drops symlinks), and **zip-bomb caps** (entry count, per-entry +
+  total uncompressed size, plus gunzip / inflate `maxOutputLength`). Archives carry no owner/repo
+  identity, so they are always fully scanned (no trust relax). "From anywhere" now includes tarballs.
+- Tests: `test/run-archive.js` (10 checks, builds tar/zip in-process) — 112 zero-dep checks total.
+
 ## 0.3.0
 
 Phase 2 — shucky becomes a full manager: it now manages many skill sources and discovers across them.

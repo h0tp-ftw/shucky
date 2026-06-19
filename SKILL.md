@@ -67,8 +67,8 @@ shucky install <source> [-g] [--agent <name>] [--all] [--copy] [-y]
 ```
 
 `<source>`: `owner/repo[/subpath][@skill][#ref]`, a github/gitlab URL (incl. self-hosted) or
-`…/blob/…/SKILL.md`, a git/ssh URL, `gist:<id>`, a raw `SKILL.md` URL, a `.well-known` host, or a
-local `./path`.
+`…/blob/…/SKILL.md`, a git/ssh URL, `gist:<id>`, a raw `SKILL.md` URL, a `.tar.gz`/`.zip` archive,
+a `.well-known` host, or a local `./path`.
 
 Flow: **resolve → fetch (temp dir) → scan (`scanTarget`) → gate → place → record.**
 - BLOCK → refuses; nothing is written. WARN → installs only with `-y` (or an interactive yes).

@@ -54,6 +54,7 @@ Pin the version (`@x.y.z`), never `@latest` — shucky is zero-dependency and se
 - `gist:<id>` or a `gist.github.com` URL
 - a **raw `SKILL.md` URL** (e.g. `raw.githubusercontent.com/…/SKILL.md`)
 - a `.well-known` host serving `/.well-known/agent-skills/index.json`
+- a **`.tar.gz` / `.zip` archive** (remote URL or local file) — extracted with zip-slip / zip-bomb / symlink guards
 - a local `./path` or `/abs/path`
 
 ### Install options
@@ -135,8 +136,8 @@ shucky pulls untrusted content over the network, so the fetcher is hardened:
   copies a symlink's target into your skills dir.
 - **git sandboxed:** `--depth 1`, no credential prompts, no LFS, array-args (no shell), validated
   ref, time/size caps.
-- **Path traversal:** subpaths and skill names are sanitized; archive extraction (zip-slip) is
-  deliberately deferred to a later phase.
+- **Path traversal & archives:** subpaths and skill names are sanitized; archive extraction
+  (`lib/archive.js`) is guarded against zip-slip, zip-bombs, and symlink/hardlink/device entries.
 
 ## Configuration (`config.json`)
 
@@ -170,8 +171,8 @@ Node ≥ 16. `git` on PATH for git-type sources (GitHub / GitLab / SSH). No npm 
 
 ## Status
 
-`v0.3.0` — find · scan · install · manage (sources, lists, remove, update). Archive (`.tar.gz` /
-`.zip`) sources and clawhub distribution are the remaining roadmap items.
+`v0.4.0` — find · scan · install (incl. `.tar.gz`/`.zip`) · manage. Remaining roadmap: more `find`
+registries (GitHub code search) and clawhub distribution.
 
 ## Credits
 
