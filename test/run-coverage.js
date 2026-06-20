@@ -172,5 +172,10 @@ function writeSkill(dir, name, body) {
   t.check('--json install output is well-formed { scope, skills:[…] }', (function () { try { const o = JSON.parse(instJson); return o.scope === 'project' && Array.isArray(o.skills) && o.skills[0].installed === true && o.skills[0].verdict === 'pass'; } catch (e) { return false; } })());
   t.rmrf(jp);
 
+  // self-update --check detects the install method without running anything
+  let suCode = 0;
+  const suText = await t.capture(function () { suCode = cli.cmdSelfUpdate(cli.parseArgs(['self-update', '--check'])); });
+  t.check('self-update --check detects install method (no action)', suCode === 0 && /(pull --ff-only|npm install -g @h0tp\/shucky|via npx)/.test(suText));
+
   t.finish('COVERAGE TESTS');
 })();

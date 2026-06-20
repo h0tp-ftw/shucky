@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.4
+
+- **`shucky self-update`** — update shucky *itself* (the CLI). It detects how shucky was installed and
+  runs the matching update: `git pull --ff-only` for a source / `npm link` checkout, `npm i -g
+  @h0tp/shucky@latest` for a global npm install, or a no-op + hint when run via npx. `--check`
+  previews the command without running it. (To re-fetch + RE-SCAN the skills shucky installed *for
+  you*, use `shucky update`.)
+
 ## 0.4.3
 
 - **Comprehensive test suite + unified runner.** `npm test` now runs `test/run-all.js`, which runs

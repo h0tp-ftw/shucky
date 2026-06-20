@@ -33,8 +33,11 @@ npx @h0tp/shucky@0.4.3 --help   # run without installing (pinned)
 ```
 
 > ⚠️ The npm registry currently has **`@h0tp/shucky@0.1.0` (scanner only)**. The full
-> find · scan · install · manage CLI (**v0.4.3**) lives on GitHub `main` until it's published — so
-> for now install **from source** above, or run `node bin/shucky.js`.
+> find · scan · install · manage CLI lives on GitHub `main` until it's published — so for now
+> install **from source** above, or run `node bin/shucky.js`.
+
+**Update shucky later** with `shucky self-update` — it detects a git-checkout vs a global-npm
+install and runs the right thing (`--check` to preview).
 
 ## Quick start
 
@@ -62,6 +65,7 @@ files as text and installs only what passes the scan. (No `shucky` command yet? 
 | `list` (`ls`) | list skills shucky installed (`--global`, `--json`) |
 | `remove <name>` (`rm`) | uninstall across agent dirs + prune the lock |
 | `update [name]` | re-fetch → **re-scan** → re-place installed skills |
+| `self-update [--check]` | update shucky itself (`git pull` / `npm -g`, auto-detected) |
 | `source add\|list\|remove <spec>` | manage the sources registry + curated lists |
 | `approve <owner/repo> --at <ver> --reason …` | log a human override of a BLOCK (pinned to a version/commit) |
 
