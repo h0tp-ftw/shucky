@@ -1,0 +1,35 @@
+name: publish
+
+# Publishes @h0tp/shucky to npm when you push a version tag (e.g. v0.4.4),
+# or via manual dispatch. Gated by the test suite (prepublishOnly) + a
+# tag↔package.json version match. Requires the repo secret NPM_TOKEN.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write   # enables npm provenance (links the package to this build)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Tag must match package.json version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: test "v$(node -p "require('./package.json').version")" = "${{ github.ref_name }}"
+
+      # `npm publish` runs prepublishOnly first → the full test suite gates the release.
+      - name: Publish to npm (public, with provenance)
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
