@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.7
+
+- **Smarter `find` ranking.** Results are now **relevance-first** — shucky preserves the order each
+  registry returned (skills.sh fuzzy, GitHub search) instead of overriding it with raw popularity, so
+  a precise niche match no longer loses to a popular loose one. **Trusted sources get a bounded boost**,
+  and **popularity is normalised per-source** (log scale) so GitHub star counts can't dominate skills.sh
+  install counts. New pure, unit-tested `rankResults()` (5 checks → 189 total).
+
 ## 0.4.6
 
 - **Docs — README rebalanced installer-first:** leads with the *one command · any source · into

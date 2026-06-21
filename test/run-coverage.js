@@ -172,6 +172,30 @@ function writeSkill(dir, name, body) {
   t.check('--json install output is well-formed { scope, skills:[…] }', (function () { try { const o = JSON.parse(instJson); return o.scope === 'project' && Array.isArray(o.skills) && o.skills[0].installed === true && o.skills[0].verdict === 'pass'; } catch (e) { return false; } })());
   t.rmrf(jp);
 
+  // find ranking: relevance-first, trust-boost, per-source popularity normalization
+  const find = require('../lib/find');
+  const trusted = new Set(['anthropics']);
+  // group 1 (e.g. skills.sh): 'a' is the more-relevant #0 (1k installs), 'b' is #1 but far more popular (50k)
+  // group 2: a trusted result at its own #0
+  const ranked = find.rankResults([
+    [{ name: 'a', source: 'x/a', installs: 1000 }, { name: 'b', source: 'x/b', installs: 50000 }],
+    [{ name: 'c', source: 'anthropics/c', installs: 10 }]
+  ], trusted);
+  t.check('rank: relevance beats popularity (a #0 before b #1 despite 50× installs)',
+    ranked.findIndex(function (r) { return r.name === 'a'; }) < ranked.findIndex(function (r) { return r.name === 'b'; }));
+  t.check('rank: trusted source is boosted to the top', ranked[0].name === 'c');
+  t.check('rank: trust auto-annotated from source owner', ranked.find(function (r) { return r.name === 'c'; }).trust === 'trusted');
+  // stars (github) don't dominate installs (skills.sh): a 200k-"installs" lone github #0 stays in the
+  // relevance-0 band, it does NOT leapfrog skills.sh #1 / #2 by raw count
+  const mixed = find.rankResults([
+    [{ name: 's0', source: 'o/s0', installs: 5000 }, { name: 's1', source: 'o/s1', installs: 4000 }, { name: 's2', source: 'o/s2', installs: 3000 }],
+    [{ name: 'g0', source: 'o/g0', installs: 200000, stars: true }]
+  ], new Set());
+  t.check('rank: github stars normalized — g0 stays in the relevance-0 band (top 2), not #1 by raw count',
+    mixed.findIndex(function (r) { return r.name === 'g0'; }) <= 1 &&
+    mixed.findIndex(function (r) { return r.name === 's1'; }) >= 2);
+  t.check('rank: internal _fields stripped from results', Object.keys(ranked[0]).every(function (k) { return k[0] !== '_'; }));
+
   // self-update --check detects the install method without running anything
   let suCode = 0;
   const suText = await t.capture(function () { suCode = cli.cmdSelfUpdate(cli.parseArgs(['self-update', '--check'])); });
