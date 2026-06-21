@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.6
+
+- **Docs — README rebalanced installer-first:** leads with the *one command · any source · into
+  every agent · zero per-repo setup* story (the original motivation), with the scan gate framed as
+  the killer differentiator rather than the headline. The from-anywhere source table moves up, and
+  `find` now documents how it merges + ranks results. No code changes.
+
 ## 0.4.5
 
 - **Docs — full README glow-up:** centered hero + badges (npm version, CI, Node, zero-deps,
