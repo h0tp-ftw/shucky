@@ -14,29 +14,24 @@ No runtime dependency on any other tool. (Uses your system `git` for git sources
 ## Install
 
 shucky is a single zero-dependency Node CLI — **Node ≥ 16** (plus your system `git` for git sources).
+Published on npm with build provenance.
 
-**From source — the current full version** (recommended today; see the note below):
+**Via npm / npx** (recommended):
+
+```bash
+npm i -g @h0tp/shucky            # global `shucky` command
+npx @h0tp/shucky@0.4.4 --help    # run without installing (pin the version, never @latest)
+```
+
+**From source** (for hacking on shucky):
 
 ```bash
 git clone https://github.com/h0tp-ftw/shucky && cd shucky
-npm link                 # adds a `shucky` command to your PATH (points at this checkout)
-shucky --version         # 0.4.3
-# …or run it directly, no link:
-node bin/shucky.js --help
+npm link                 # adds a `shucky` command pointing at your checkout
+node bin/shucky.js --help   # …or run it directly, no link
 ```
 
-**Via npm / npx** (once v0.4.x is published — pin the version, never `@latest`, for a security tool):
-
-```bash
-npm i -g @h0tp/shucky           # global `shucky` command
-npx @h0tp/shucky@0.4.3 --help   # run without installing (pinned)
-```
-
-> ⚠️ The npm registry currently has **`@h0tp/shucky@0.1.0` (scanner only)**. The full
-> find · scan · install · manage CLI lives on GitHub `main` until it's published — so for now
-> install **from source** above, or run `node bin/shucky.js`.
-
-**Update shucky later** with `shucky self-update` — it detects a git-checkout vs a global-npm
+**Update shucky later** with `shucky self-update` — it detects a global-npm vs git-checkout
 install and runs the right thing (`--check` to preview).
 
 ## Quick start
@@ -200,8 +195,8 @@ Node ≥ 16. `git` on PATH for git-type sources (GitHub / GitLab / SSH). No npm 
 
 ## Status
 
-`v0.4.1` — find (incl. GitHub) · scan · install (incl. `.tar.gz`/`.zip`) · manage. **ClawHub-ready**
-(see `CLAWHUB.md`); publishing to npm / ClawHub is the maintainer's account-gated step.
+`v0.4.4` — find (incl. GitHub) · scan · install (incl. `.tar.gz`/`.zip`) · manage · self-update.
+**Published on npm** (`@h0tp/shucky`, with build provenance). Also **ClawHub-ready** (see `CLAWHUB.md`).
 
 ## Credits
 
