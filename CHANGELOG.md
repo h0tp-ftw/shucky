@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.5
+
+- **Docs — full README glow-up:** centered hero + badges (npm version, CI, Node, zero-deps,
+  provenance, license); a real "it blocked a skill that told the reviewer to switch itself off"
+  showpiece; a *from-anywhere* source table; the two-layer (deterministic floor + agent review)
+  security model; and clean command / rule / source tables. npm-first install now that the package
+  is live. No code changes.
+
 ## 0.4.4
 
 - **`shucky self-update`** — update shucky *itself* (the CLI). It detects how shucky was installed and
